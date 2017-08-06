@@ -1,7 +1,7 @@
 var orgsModule = angular.module('orgs');
 
 usersModule.component('addOrgComponent', {
-    templateUrl: "modules/Orgs/AddOrg/addOrg.html",
+    templateUrl: "modules/Orgs/AddOrg/AddOrg.html",
     controller: addOrgController
 });
 
@@ -12,8 +12,6 @@ function addOrgController(orgsService, state) {
     AB.addOrg = {};
 
     AB.addOrg = function () {
-        AB.service.addOrg().then(function (data) {
-            state.go('addExperts');
-        });
+        AB.service.addOrg();
     }
 };
