@@ -12,15 +12,15 @@ contract InsuranceCompany {
    		_;
 	}
 
-	function InsuranceCompany() {
+	function InsuranceCompany() payable {
 		owner = msg.sender;
 	}
 
-	function IssueContract(address driverAddress) payable returns(address) {
-		address contractAddress = new DriverContract(driverAddress);
+	function IssueContract() payable returns(address) {
+		address contractAddress = new DriverContract(msg.sender);
 		contractAddress.transfer(msg.value*10);
 		
-		Issued(driverAddress);
+		Issued(msg.sender);
 		return contractAddress;
 	}
 

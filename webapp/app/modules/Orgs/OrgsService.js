@@ -2,28 +2,87 @@ var orgsModule = angular.module('orgs');
 
 orgsModule.factory('orgsService', orgService);
 
-orgService.$inject = ['InsuranceCompanyContract'];
-function orgService(InsuranceCompanyContract) {
+orgService.$inject = ['InsuranceCompanyContract', '$q'];
+function orgService(InsuranceCompanyContract, $q) {
 
     var storage = {
+        data: undefined
     };
 
     return {
         addOrg: function () {
-            console.log(InsuranceCompanyContract);
-            var MyContract = web3.eth.contract(InsuranceCompanyContract.abi);
+            const deffered = $q.defer();
+            var insuranceContract = web3.eth.contract(InsuranceCompanyContract.abi);
 
-            var contractInstance = MyContract.new({ from: web3.eth.coinbase, gas: 1000000 },
+            var contractInstance = insuranceContract.new({ from: web3.eth.coinbase,  gas: 1200000 },
                 function (e, contract) {
-                    console.log(e, contract);
-                    if (typeof contract.address !== 'undefined') {
-                        console.log('Contract mined! address: ' + contract.address + ' transactionHash: ' + contract.transactionHash);
-                    }
+                    if(e) return;
+                    console.log(contract);        
+                    storage.data = contract.transactionHash;
+                    deffered.resolve(contract.transactionHash);
                 });
-            // METAMASK WEB3 LOGIC WILL BE HERE
+            return deffered.promise;
         },
+
+        issueContract: function (deployedContract, sum) {
+            const deffered = $q.defer();
+            var insuranceContract = web3.eth.contract(InsuranceCompanyContract.abi);
+            var contractInstance = insuranceContract.at(deployedContract);
+
+           contractInstance.IssueContract.call(
+               { from: web3.eth.coinbase,  gas: 1200000, value: web3.toWei(sum, 'ether')},
+                function (err, address) {
+                    if(err) return;
+                    console.log(address);        
+                    deffered.resolve(address);
+                });
+            return deffered.promise;
+        },
+        
+        addExpert: function(expertAddr, deployedContract) {
+            const deffered = $q.defer();
+
+            var insuranceContract = web3.eth.contract(InsuranceCompanyContract.abi);
+            var contractInstance = insuranceContract.at(deployedContract);
+            var expert = web3.toHex(expertAddr);
+            contractInstance.addExpert(expert,  function (e, result) {
+                    if(e) return;
+                    console.log(result);
+                });
+            
+            return deffered.promise;
+        },
+
+        executePayout: function(driverContractAddress, payoutAmount){
+            const deffered = $q.defer();
+                    
+            var insuranceContract = web3.eth.contract(InsuranceCompanyContract.driverAbi);
+            var contractInstance = insuranceContract.at(driverContractAddress);
+
+            contractInstance.Payout(payoutAmount,  function (e, result) {
+                    if(e) return;
+                    console.log(result);
+                    deffered.resolve(result);
+                });
+
+            return deffered.promise;
+        },
+
+        checkExpert: function(expert, deployedContract) {
+            const deffered = $q.defer();
+
+            var insuranceContract = web3.eth.contract(InsuranceCompanyContract.abi);
+            var contractInstance = insuranceContract.at(deployedContract);
+            contractInstance.IsExpert(expert,  function (e, result) {
+                    if(e) return;
+                    deffered.resolve(result);
+                });
+            
+            return deffered.promise;
+        },
+
         getStorage: function () {
-            return storage;
+            return storage.data;
         }
     };
 };

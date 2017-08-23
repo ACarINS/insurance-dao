@@ -1,0 +1,12 @@
+<span ng-controller="ExpertController as expertCtrl">
+    <h3>Execute payout for user</h3>
+    <div class="section">
+        Enter driver contract address: 
+        <input class="form-control" type="text" ng-model="expertCtrl.driverContractAddress">
+        Enter payout amount: 
+        <input class="form-control" type="number" ng-model="expertCtrl.payoutAmount">
+
+        <button class="btn" ng-click="expertCtrl.executePayout()">Execute payout</button>
+    </div>
+    {{expertCtrl.resultMessage}}
+</span>

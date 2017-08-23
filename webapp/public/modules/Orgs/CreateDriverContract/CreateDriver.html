@@ -1,0 +1,23 @@
+<span ng-controller="CreatDriverController as driverController">
+    <h3>1.Choose your car</h3>
+    <div class="section">
+        <select class="form-control" ng-click="driverController.countPrice()">
+            <option value="volvo">Volvo</option>
+            <option value="saab">BMW</option>
+            <option value="mercedes">Mercedes</option>
+            <option value="audi">Audi</option>
+        </select>
+        Your insurance price is : {{driverController.insurancePrice}} ETH
+    </div>
+
+    <h3>2.Create your Driver Insurance</h3>
+    <div class="section">
+        Enter insurance organization address: 
+        <input class="form-control" type="text" ng-model="driverController.orgAddress">
+        <button class="btn" ng-click="driverController.IssueContract()">Add</button>
+        Get and Save your driver contract address :
+        <span class="address">
+             {{driverController.driverContractAddress}}
+        </span>
+    </div>
+</span>
